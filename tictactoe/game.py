@@ -10,7 +10,8 @@ class TicTacToe:
 
     def print_board(self):
         def cell(i):
-            return self.board[i] if self.board[i] is not None else ' '
+            return self.board[i] if self.board[i] is not None else str(i)
+
         print()
         print(f" {cell(0)} | {cell(1)} | {cell(2)} ")
         print("---+---+---")
