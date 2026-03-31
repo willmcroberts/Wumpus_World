@@ -1,7 +1,6 @@
 # minimax.py
 
 def best_move(board, player):
-    """Return the best move index for the given player using Minimax."""
     maximizing = (player == 'X')
     best_score = float('-inf') if maximizing else float('inf')
     best_move = None
@@ -21,7 +20,6 @@ def best_move(board, player):
 
 
 def minimax(board, maximizing, player):
-    """Minimax search returning utility value."""
     opponent = 'O' if player == 'X' else 'X'
 
     if winner(board) == player:
@@ -47,9 +45,6 @@ def minimax(board, maximizing, player):
             val = minimax(new_board, True, player)
             best = min(best, val)
         return best
-
-
-# --- Helper functions (duplicated here to keep minimax.py self-contained) ---
 
 def available_moves(board):
     return [i for i, v in enumerate(board) if v is None]

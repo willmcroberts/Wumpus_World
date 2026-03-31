@@ -1,23 +1,33 @@
 # game.py
 
-from .minimax import best_move
+from . import minimax
 
 class TicTacToe:
     def __init__(self):
-        # Board is a list of 9 cells: 'X', 'O', or None
         self.board = [None] * 9
         self.current_player = 'X'
 
     def print_board(self):
+        RESET = "\033[0m"
+        GREEN = "\033[92m"
+        RED = "\033[91m"
+        BLUE = "\033[94m"
+
         def cell(i):
-            return self.board[i] if self.board[i] is not None else str(i)
+            v = self.board[i]
+            if v == 'X':
+                return RED + 'X' + RESET
+            elif v == 'O':
+                return BLUE + 'O' + RESET
+            else:
+                return GREEN + str(i) + RESET
 
         print()
-        print(f" {cell(0)} | {cell(1)} | {cell(2)} ")
-        print("---+---+---")
-        print(f" {cell(3)} | {cell(4)} | {cell(5)} ")
-        print("---+---+---")
-        print(f" {cell(6)} | {cell(7)} | {cell(8)} ")
+        print(GREEN + f" {cell(0)} | {cell(1)} | {cell(2)} " + RESET)
+        print(GREEN + "---+---+---" + RESET)
+        print(GREEN + f" {cell(3)} | {cell(4)} | {cell(5)} " + RESET)
+        print(GREEN + "---+---+---" + RESET)
+        print(GREEN + f" {cell(6)} | {cell(7)} | {cell(8)} " + RESET)
         print()
 
     def available_moves(self):
@@ -31,9 +41,9 @@ class TicTacToe:
 
     def winner(self):
         wins = [
-            (0,1,2), (3,4,5), (6,7,8),  # rows
-            (0,3,6), (1,4,7), (2,5,8),  # cols
-            (0,4,8), (2,4,6)            # diagonals
+            (0,1,2), (3,4,5), (6,7,8),
+            (0,3,6), (1,4,7), (2,5,8),
+            (0,4,8), (2,4,6)
         ]
         for a,b,c in wins:
             if self.board[a] and self.board[a] == self.board[b] == self.board[c]:
@@ -52,7 +62,7 @@ class TicTacToe:
             self.print_board()
 
             if self.current_player == ai_player:
-                move = best_move(self.board, ai_player)
+                move = minimax.best_move(self.board, ai_player)
                 print(f"AI ({ai_player}) chooses {move}")
                 self.make_move(move, ai_player)
             else:
