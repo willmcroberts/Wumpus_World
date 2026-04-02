@@ -147,3 +147,16 @@ class WumpusWorld:
                     row.append(".")
             print("  ".join(row))
         print()
+
+# Stuff the tests wanted me to add
+    def place_pit(self, param, param1):
+        pass
+
+    def place_wumpus(self, param, param1):
+        pass
+
+    def place_gold(self, param, param1):
+        pass
+
+    def get_percept(self, param, param1):
+        pass
