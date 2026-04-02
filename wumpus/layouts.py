@@ -1,3 +1,5 @@
+# layouts.py
+
 class WumpusLayout:
     def __init__(self, width, height, pits, wumpus, gold, start, start_dir):
         self.width = width
@@ -16,5 +18,5 @@ def tiny_layout():
         wumpus=(1, 3),
         gold=(2, 3),
         start=(1, 1),
-        start_dir="EAST",
+        start_dir="EAST"
     )

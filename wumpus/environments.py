@@ -30,10 +30,10 @@ class WumpusWorld:
     def get_percepts(self):
         x, y = self.agent_pos
 
-        stench = any(
-            (abs(x - wx) + abs(y - wy) == 1)
-            for (wx, wy) in [self.wumpus]
-        ) if self.wumpus_alive else False
+        stench = False
+        if self.wumpus_alive:
+            wx, wy = self.wumpus
+            stench = (abs(x - wx) + abs(y - wy) == 1)
 
         breeze = any(
             (abs(x - px) + abs(y - py) == 1)
@@ -110,7 +110,6 @@ class WumpusWorld:
         self.score -= 1
 
     def _arrow_hits_wumpus(self):
-        # Simple straight-line check
         ax, ay = self.agent_pos
         wx, wy = self.wumpus
 

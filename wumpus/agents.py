@@ -1,12 +1,14 @@
 # agents.py
 
-import random
-
 class WumpusAgent:
     def __init__(self):
         self.visited = set()
         self.safe = set()
+        self.frontier = set()
         self.has_gold = False
+
+        self.position = (1, 1)
+        self.direction = "EAST"
 
     def initialize(self, percepts):
         self.visited.add((1, 1))
@@ -20,9 +22,124 @@ class WumpusAgent:
             return "GRAB"
 
         if self.has_gold:
-            return "CLIMB"
+            if self.position == (1, 1):
+                return "CLIMB"
+            action = self._move_toward((1, 1))
+            self._apply_action_effect(action)
+            return action
 
-        if stench or breeze:
-            return random.choice(["TURN_LEFT", "TURN_RIGHT"])
+        self._update_kb(percepts)
+
+        target = self._choose_safe_target()
+        if target:
+            action = self._move_toward(target)
+            self._apply_action_effect(action)
+            return action
+
+        target = self._choose_frontier_target()
+        if target:
+            action = self._move_toward(target)
+            self._apply_action_effect(action)
+            return action
+
+        action = "TURN_LEFT"
+        self._apply_action_effect(action)
+        return action
+
+    def _update_kb(self, percepts):
+        stench, breeze, glitter, bump, scream = percepts
+        x, y = self.position
+
+        adj = [
+            (x + 1, y),
+            (x - 1, y),
+            (x, y + 1),
+            (x, y - 1)
+        ]
+
+        adj = [(a, b) for (a, b) in adj if 1 <= a <= 4 and 1 <= b <= 4]
+
+        if not breeze and not stench:
+            for tile in adj:
+                if tile not in self.safe:
+                    self.safe.add(tile)
+                    if tile not in self.visited:
+                        self.frontier.add(tile)
+            return
+
+        for tile in adj:
+            if tile not in self.safe and tile not in self.visited:
+                self.frontier.add(tile)
+
+    def _choose_safe_target(self):
+        for tile in self.safe:
+            if tile not in self.visited:
+                return tile
+        return None
+
+    def _choose_frontier_target(self):
+        for tile in self.frontier:
+            if tile not in self.visited:
+                return tile
+        return None
+
+    def _move_toward(self, target):
+        tx, ty = target
+        x, y = self.position
+
+        if tx > x:
+            return self._face_and_move("EAST")
+        if tx < x:
+            return self._face_and_move("WEST")
+
+        if ty > y:
+            return self._face_and_move("NORTH")
+        if ty < y:
+            return self._face_and_move("SOUTH")
 
         return "MOVE_FORWARD"
+
+    def _face_and_move(self, direction):
+        if self.direction == direction:
+            return "MOVE_FORWARD"
+        return self._turn_toward(direction)
+
+    def _turn_toward(self, direction):
+        dirs = ["NORTH", "EAST", "SOUTH", "WEST"]
+        i = dirs.index(self.direction)
+        j = dirs.index(direction)
+
+        if (i - j) % 4 == 1:
+            return "TURN_LEFT"
+        else:
+            return "TURN_RIGHT"
+
+    def _apply_action_effect(self, action):
+        self._update_direction(action)
+        self.position = self._predict_position(action)
+        self.visited.add(self.position)
+        self.safe.add(self.position)
+
+    def _update_direction(self, action):
+        dirs = ["NORTH", "EAST", "SOUTH", "WEST"]
+        i = dirs.index(self.direction)
+
+        if action == "TURN_LEFT":
+            self.direction = dirs[(i - 1) % 4]
+        elif action == "TURN_RIGHT":
+            self.direction = dirs[(i + 1) % 4]
+
+    def _predict_position(self, action):
+        x, y = self.position
+
+        if action == "MOVE_FORWARD":
+            if self.direction == "NORTH":
+                return (x, y + 1)
+            if self.direction == "SOUTH":
+                return (x, y - 1)
+            if self.direction == "EAST":
+                return (x + 1, y)
+            if self.direction == "WEST":
+                return (x - 1, y)
+
+        return (x, y)
