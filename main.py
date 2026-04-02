@@ -34,7 +34,7 @@ def run_wumpus_world():
 
         percepts = env.apply_action(action)
 
-        time.sleep(0.5)
+        time.sleep(1.5)
 
     env.render()
     print("\nGame Over!")
