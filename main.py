@@ -5,7 +5,7 @@ from wumpus.environments import WumpusWorld
 from wumpus.agents import WumpusAgent
 from wumpus.layouts import tiny_layout
 
-def main():
+def run_tictactoe():
     print("=== Tic Tac Toe ===")
     print("You are O. AI is X.")
     print("Board positions are numbered 0–8.\n")
@@ -24,13 +24,12 @@ def run_wumpus_world():
     percepts = env.get_percepts()
     agent.initialize(percepts)
 
-    while not env.is_terminal():
+    while not env.game_over:
         action = agent.next_action(percepts)
         percepts = env.apply_action(action)
 
     print("\nGame Over!")
     print(f"Final score: {env.score}")
-
 
 def main():
     print("Choose a game:")
