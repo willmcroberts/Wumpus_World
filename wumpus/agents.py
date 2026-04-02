@@ -1,5 +1,6 @@
 class WumpusAgent:
     def __init__(self):
+        self.kb = None
         self.visited = set()
         self.safe = set()
         self.frontier = set()
@@ -207,3 +208,10 @@ class WumpusAgent:
             return True
 
         return False
+
+# Stuff the tests wanted me to add
+    def get_safe_moves(self):
+        pass
+
+    def update_kb(self, percept):
+        pass

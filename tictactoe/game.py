@@ -81,3 +81,16 @@ class TicTacToe:
             print(f"Winner: {w}")
         else:
             print("Draw.")
+
+# Stuff the tests wanted
+    def get_legal_moves(self):
+        pass
+
+    def is_terminal(self):
+        pass
+
+    def get_winner(self):
+        pass
+
+    def minimax_decision(self):
+        pass
