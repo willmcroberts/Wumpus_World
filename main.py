@@ -13,5 +13,39 @@ def main():
     game = TicTacToe()
     game.play(ai_player='X')
 
+
+def run_wumpus_world():
+    print("=== Wumpus World ===\n")
+
+    layout = tiny_layout()
+    env = WumpusWorld(layout)
+    agent = WumpusAgent()
+
+    percepts = env.get_percepts()
+    agent.initialize(percepts)
+
+    while not env.is_terminal():
+        action = agent.next_action(percepts)
+        percepts = env.apply_action(action)
+
+    print("\nGame Over!")
+    print(f"Final score: {env.score}")
+
+
+def main():
+    print("Choose a game:")
+    print("1) Tic Tac Toe")
+    print("2) Wumpus World\n")
+
+    choice = input("Enter choice: ").strip()
+
+    if choice == "1":
+        run_tictactoe()
+    elif choice == "2":
+        run_wumpus_world()
+    else:
+        print("Invalid choice.")
+
+
 if __name__ == "__main__":
     main()
