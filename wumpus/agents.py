@@ -143,3 +143,21 @@ class WumpusAgent:
                 return (x - 1, y)
 
         return (x, y)
+
+    def _wumpus_in_front(self):
+        if not self.confirmed_wumpus:
+            return False
+
+        wx, wy = self.confirmed_wumpus
+        x, y = self.position
+
+        if self.direction == "NORTH" and wx == x and wy > y:
+            return True
+        if self.direction == "SOUTH" and wx == x and wy < y:
+            return True
+        if self.direction == "EAST" and wy == y and wx > x:
+            return True
+        if self.direction == "WEST" and wy == y and wx < x:
+            return True
+
+        return False
