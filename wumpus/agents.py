@@ -1,5 +1,3 @@
-# agents.py
-
 class WumpusAgent:
     def __init__(self):
         self.visited = set()
@@ -9,6 +7,10 @@ class WumpusAgent:
 
         self.position = (1, 1)
         self.direction = "EAST"
+
+        self.possible_wumpus = None
+        self.confirmed_wumpus = None
+        self.not_wumpus = set()
 
     def initialize(self, percepts):
         self.visited.add((1, 1))
@@ -24,11 +26,16 @@ class WumpusAgent:
         if self.has_gold:
             if self.position == (1, 1):
                 return "CLIMB"
-            action = self._move_toward((1, 1))
+            action = self._safe_move_toward_home()
             self._apply_action_effect(action)
             return action
 
         self._update_kb(percepts)
+
+        if self.confirmed_wumpus and self._wumpus_in_front():
+            action = "SHOOT"
+            self._apply_action_effect(action)
+            return action
 
         target = self._choose_safe_target()
         if target:
@@ -56,20 +63,38 @@ class WumpusAgent:
             (x, y + 1),
             (x, y - 1)
         ]
-
         adj = [(a, b) for (a, b) in adj if 1 <= a <= 4 and 1 <= b <= 4]
+
+        if not stench:
+            for tile in adj:
+                self.not_wumpus.add(tile)
+
+            if self.possible_wumpus:
+                self.possible_wumpus -= set(adj)
+                if len(self.possible_wumpus) == 1:
+                    self.confirmed_wumpus = next(iter(self.possible_wumpus))
 
         if not breeze and not stench:
             for tile in adj:
-                if tile not in self.safe:
-                    self.safe.add(tile)
-                    if tile not in self.visited:
-                        self.frontier.add(tile)
+                self.safe.add(tile)
+                if tile not in self.visited:
+                    self.frontier.add(tile)
             return
 
         for tile in adj:
             if tile not in self.safe and tile not in self.visited:
                 self.frontier.add(tile)
+
+        if stench:
+            stench_candidates = set(t for t in adj if t not in self.not_wumpus)
+
+            if self.possible_wumpus is None:
+                self.possible_wumpus = stench_candidates
+            else:
+                self.possible_wumpus &= stench_candidates
+
+            if self.possible_wumpus and len(self.possible_wumpus) == 1:
+                self.confirmed_wumpus = next(iter(self.possible_wumpus))
 
     def _choose_safe_target(self):
         for tile in self.safe:
@@ -79,7 +104,7 @@ class WumpusAgent:
 
     def _choose_frontier_target(self):
         for tile in self.frontier:
-            if tile not in self.visited:
+            if tile not in self.visited and tile != self.confirmed_wumpus:
                 return tile
         return None
 
@@ -91,13 +116,34 @@ class WumpusAgent:
             return self._face_and_move("EAST")
         if tx < x:
             return self._face_and_move("WEST")
-
         if ty > y:
             return self._face_and_move("NORTH")
         if ty < y:
             return self._face_and_move("SOUTH")
 
         return "MOVE_FORWARD"
+
+    def _safe_move_toward_home(self):
+        x, y = self.position
+        candidates = [
+            (x + 1, y),
+            (x - 1, y),
+            (x, y + 1),
+            (x, y - 1)
+        ]
+        candidates = [(a, b) for (a, b) in candidates if 1 <= a <= 4 and 1 <= b <= 4]
+
+        def dist(tile):
+            tx, ty = tile
+            return abs(tx - 1) + abs(ty - 1)
+
+        safe_neighbors = [t for t in candidates if t in self.safe]
+        if safe_neighbors:
+            safe_neighbors.sort(key=dist)
+            target = safe_neighbors[0]
+            return self._move_toward(target)
+
+        return self._move_toward((1, 1))
 
     def _face_and_move(self, direction):
         if self.direction == direction:
