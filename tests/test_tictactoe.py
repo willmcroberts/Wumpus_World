@@ -1,4 +1,4 @@
-# Tic Tac Toe Tests
+# test_tictactoe.py
 
 from tictactoe.game import TicTacToe
 
