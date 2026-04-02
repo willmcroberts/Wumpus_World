@@ -1,6 +1,9 @@
 # main.py
 
 from tictactoe.game import TicTacToe
+from wumpus.environments import WumpusWorld
+from wumpus.agents import WumpusAgent
+from wumpus.layouts import tiny_layout
 
 def main():
     print("=== Tic Tac Toe ===")
