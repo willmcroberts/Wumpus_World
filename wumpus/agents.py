@@ -1,29 +1,28 @@
+# agents.py
+
+import random
+
 class WumpusAgent:
     def __init__(self):
-        self.kb = ...
-        self.has_arrow = True
+        self.visited = set()
+        self.safe = set()
         self.has_gold = False
-        self.position = (1, 1)
-        self.direction = "EAST"
-        self.alive = True
 
-    def initialize(self, initial_percepts):
-        """Called at start of episode."""
-        ...
-
-    def tell(self, percepts):
-        """Update KB with new percepts."""
-        ...
-
-    def ask(self):
-        """Infer safe cells / Wumpus location, choose next action."""
-        ...
+    def initialize(self, percepts):
+        self.visited.add((1, 1))
+        self.safe.add((1, 1))
 
     def next_action(self, percepts):
-        """
-        Convenience wrapper:
-        - self.tell(percepts)
-        - action = self.ask()
-        - return action
-        """
-        ...
+        stench, breeze, glitter, bump, scream = percepts
+
+        if glitter:
+            self.has_gold = True
+            return "GRAB"
+
+        if self.has_gold:
+            return "CLIMB"
+
+        if stench or breeze:
+            return random.choice(["TURN_LEFT", "TURN_RIGHT"])
+
+        return "MOVE_FORWARD"

@@ -1,5 +1,6 @@
 # main.py
 
+import time
 from tictactoe.game import TicTacToe
 from wumpus.environments import WumpusWorld
 from wumpus.agents import WumpusAgent
@@ -25,9 +26,17 @@ def run_wumpus_world():
     agent.initialize(percepts)
 
     while not env.game_over:
+        env.render()
+
+        print("Percepts:", percepts)
         action = agent.next_action(percepts)
+        print("Action:", action)
+
         percepts = env.apply_action(action)
 
+        time.sleep(0.5)
+
+    env.render()
     print("\nGame Over!")
     print(f"Final score: {env.score}")
 
